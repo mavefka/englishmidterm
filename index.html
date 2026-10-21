@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Hub Pre-B1 | İnteraktif Vize Koçu (Units 1-6)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .perspective { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; transition: transform 0.5s; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        .flipped { transform: rotateY(180deg); }
+        .tab-active { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- ÜST BAR (XP & SEVİYE SİSTEMİ) -->
+    <header class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3">
+        <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-xl shadow-lg shadow-indigo-500/30">🇬🇧</div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight text-white">Language Hub A2/Pre-B1 Koçu</h1>
+                    <p class="text-xs text-slate-400">Units 1–6 Vize Hazırlık Platformu</p>
+                </div>
+            </div>
+
+            <!-- XP ve Level göstergesi -->
+            <div class="flex items-center gap-4 bg-slate-800/80 px-4 py-2 rounded-2xl border border-slate-700">
+                <div>
+                    <div class="text-xs text-slate-400 font-medium">SEVİYE UNVANI</div>
+                    <div id="level-title" class="text-sm font-bold text-amber-400">🌱 Beginner Explorer</div>
+                </div>
+                <div class="h-8 w-px bg-slate-700"></div>
+                <div>
+                    <div class="text-xs text-slate-400 font-medium">TOPLAM PUAN</div>
+                    <div class="text-sm font-extrabold text-indigo-400"><span id="xp-count">0</span> XP</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ANA İÇERİK -->
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-6">
+
+        <!-- NAVİGASYON SEKMELERİ -->
+        <div class="flex flex-wrap gap-2 mb-6 bg-slate-800/50 p-1.5 rounded-2xl border border-slate-800">
+            <button onclick="switchTab('grammar')" id="tab-grammar" class="tab-btn tab-active flex-1 min-w-[140px] py-2.5 px-4 rounded-xl font-semibold text-sm transition-all">
+                ⚡ Tek Bakışta Grammar
+            </button>
+            <button onclick="switchTab('vocab')" id="tab-vocab" class="tab-btn flex-1 min-w-[140px] py-2.5 px-4 rounded-xl font-semibold text-sm text-slate-300 hover:text-white transition-all">
+                🃏 Kelime & Edat Kartları
+            </button>
+            <button onclick="switchTab('quiz')" id="tab-quiz" class="tab-btn flex-1 min-w-[140px] py-2.5 px-4 rounded-xl font-semibold text-sm text-slate-300 hover:text-white transition-all">
+                ⚔️ İnteraktif Sınav Modu
+            </button>
+            <button onclick="switchTab('cheatsheet')" id="tab-cheatsheet" class="tab-btn flex-1 min-w-[140px] py-2.5 px-4 rounded-xl font-semibold text-sm text-slate-300 hover:text-white transition-all">
+                📄 Son Gece Özeti & Diyaloglar
+            </button>
+        </div>
+
+        <!-- ÜNİTE FİLTRESİ -->
+        <div id="unit-filter-bar" class="flex items-center gap-2 overflow-x-auto pb-3 mb-6">
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 mr-1">Ünite Seç:</span>
+            <button onclick="filterUnit('all')" class="unit-btn bg-indigo-600 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg transition" data-unit="all">Tümü (U1-U6)</button>
+            <button onclick="filterUnit(1)" class="unit-btn bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold px-3 py-1.5 rounded-lg transition" data-unit="1">U1: Relationships</button>
+            <button onclick="filterUnit(2)" class="unit-btn bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold px-3 py-1.5 rounded-lg transition" data-unit="2">U2: Living</button>
+            <button onclick="filterUnit(3)" class="unit-btn bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold px-3 py-1.5 rounded-lg transition" data-unit="3">U3: Travel</button>
+            <button onclick="filterUnit(4)" class="unit-btn bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold px-3 py-1.5 rounded-lg transition" data-unit="4">U4: Socialising</button>
+            <button onclick="filterUnit(5)" class="unit-btn bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold px-3 py-1.5 rounded-lg transition" data-unit="5">U5: Work</button>
+            <button onclick="filterUnit(6)" class="unit-btn bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold px-3 py-1.5 rounded-lg transition" data-unit="6">U6: Health</button>
+        </div>
+
+        <!-- 1. SEKME: GRAMMAR REHBERİ -->
+        <section id="sec-grammar" class="space-y-6">
+            <div class="bg-indigo-950/40 border border-indigo-500/30 rounded-2xl p-4 flex items-center justify-between">
+                <div>
+                    <h2 class="text-base font-bold text-indigo-300">💡 Nereden Başlamalı?</h2>
+                    <p class="text-xs text-slate-300 mt-0.5">Tüm ünitelerin gramer kuralları aşağıda kartlar halinde listelenmiştir. Üstteki butonlardan istediğin üniteyi filtreleyebilir veya kartın altındaki <b>"Anladım (+10 XP)"</b> butonuna basarak ilerleyebilirsin.</p>
+                </div>
+            </div>
+            <div id="grammar-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+        </section>
+
+        <!-- 2. SEKME: KELİME & EDAT KARTLARI -->
+        <section id="sec-vocab" class="hidden space-y-6">
+            <div class="bg-emerald-950/40 border border-emerald-500/30 rounded-2xl p-4">
+                <h2 class="text-base font-bold text-emerald-300">🃏 Tıkla ve Çevir (Flashcards)</h2>
+                <p class="text-xs text-slate-300 mt-0.5">Kartların üzerine tıklayarak Türkçe anlamlarını ve kitaptaki örnek cümlelerini görebilirsin. Özellikle <b>Edatlar (Prepositions)</b> sınavda boşluk doldurmada kesin çıkar!</p>
+            </div>
+            <div id="vocab-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+        </section>
+
+        <!-- 3. SEKME: İNTERAKTİF SINAV MODU -->
+        <section id="sec-quiz" class="hidden space-y-6">
+            <div class="bg-slate-800/70 border border-slate-700 rounded-2xl p-6">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                    <div>
+                        <span id="quiz-badge" class="text-xs font-bold uppercase px-2.5 py-1 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Karışık Sınav Modu</span>
+                        <h2 class="text-xl font-bold mt-2">Soru <span id="q-current">1</span> / <span id="q-total">18</span></h2>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm text-slate-400">Doğru: <b id="score-correct" class="text-emerald-400">0</b></span>
+                        <span class="text-sm text-slate-400">Yanlış: <b id="score-wrong" class="text-rose-400">0</b></span>
+                        <button onclick="restartQuiz()" class="text-xs bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg font-medium transition">🔄 Sıfırla</button>
+                    </div>
+                </div>
+
+                <!-- Soru Alanı -->
+                <div id="quiz-container">
+                    <p id="q-text" class="text-lg font-medium text-white mb-6 bg-slate-900/90 p-4 rounded-xl border border-slate-800"></p>
+                    <div id="q-options" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6"></div>
+                    
+                    <!-- Açıklama Kutusu -->
+                    <div id="q-feedback" class="hidden rounded-xl p-4 mb-4 text-sm"></div>
+
+                    <button id="next-btn" onclick="nextQuestion()" class="hidden w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 px-6 rounded-xl transition">
+                        Sonraki Soru ➔
+                    </button>
+                </div>
+
+                <!-- Sınav Sonu Ekranı -->
+                <div id="quiz-result" class="hidden text-center py-8 space-y-4">
+                    <div class="text-5xl">🏆</div>
+                    <h3 class="text-2xl font-bold">Test Tamamlandı!</h3>
+                    <p id="result-summary" class="text-slate-300"></p>
+                    <div id="weak-points" class="max-w-lg mx-auto text-left bg-slate-900 p-4 rounded-xl border border-slate-800 text-xs space-y-2"></div>
+                    <button onclick="restartQuiz()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 px-6 rounded-xl transition mt-4">
+                        Tekrar Çöz
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. SEKME: SON GECE ÖZETİ & FUNCTIONAL LANGUAGE -->
+        <section id="sec-cheatsheet" class="hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Sol: Günlük Konuşma Kalıpları -->
+                <div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-5 space-y-4">
+                    <h3 class="text-lg font-bold text-amber-400">🗣️ Café Hub: Günlük Konuşma Kalıpları (Sınavda Diyalog Tamamlama)</h3>
+                    <div class="space-y-3 text-xs leading-relaxed">
+                        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                            <b class="text-indigo-400 block mb-1">U1: Tanışma & Selamlaşma (s. 8)</b>
+                            • <b>How's it going? / How are you doing?</b> ➔ <i>I'm good. How about you?</i><br>
+                            • <b>What's new?</b> (Ne var ne yok?) ➔ <i>Not much.</i> (Pek bir şey yok.)<br>
+                            • <b>Long time, no see!</b> (Uzun zamandır görüşemedik!)
+                        </div>
+                        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                            <b class="text-indigo-400 block mb-1">U2: Tavsiye İsteme ve Verme (s. 18)</b>
+                            • <b>What should I do? / What do you suggest?</b> (Ne yapmalıyım / Ne önerirsin?)<br>
+                            • <b>You should / could + V1</b> (<i>You should go and talk to them.</i>)<br>
+                            • <b>Why don't you / we + V1?</b> (<i>Why don't you do breathing exercises?</i>)<br>
+                            • <b>How about + V-ing?</b> (<i>How about using some earplugs?</i> - ⚠️ <b>-ing</b> alır!)
+                        </div>
+                        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                            <b class="text-indigo-400 block mb-1">U3: Tren İstasyonunda Bilgi Sorma (s. 28)</b>
+                            • <b>Could I have a ticket to...?</b> ➔ <i>Would you like a single (tek yön) or a return (gidiş-dönüş)?</i><br>
+                            • <b>Do I have to change trains?</b> (Aktarma yapmalı mıyım?)<br>
+                            • <b>What platform does it leave from?</b> (Hangi perondan kalkıyor?)
+                        </div>
+                        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                            <b class="text-indigo-400 block mb-1">U4: Buluşma Ayarlama (s. 38)</b>
+                            • <b>Would you like to hang out tonight?</b> (Bu akşam takılmak ister misin?)<br>
+                            • <b>Are you free on Saturday?</b> (Cumartesi müsait misin?)<br>
+                            • <b>How about Sunday instead?</b> (Onun yerine pazar nasıl olur?)
+                        </div>
+                        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                            <b class="text-indigo-400 block mb-1">U5: İş Görüşmesi / Mülakat (s. 48-49)</b>
+                            • <b>Currently, I'm working for a law firm.</b> (Şu anda bir hukuk firmasında çalışıyorum.)<br>
+                            • <b>I'm good at working under pressure.</b> (Baskı altında çalışmakta iyiyimdir.)<br>
+                            • <b>I've learnt how to manage my time / deal with clients.</b>
+                        </div>
+                        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
+                            <b class="text-indigo-400 block mb-1">U6: Eczanede Semptom Anlatma (s. 58)</b>
+                            • <b>What are your symptoms? / Are you allergic to anything?</b><br>
+                            • <b>Do you have anything for a sore throat?</b> (Boğaz ağrısı için bir şeyiniz var mı?)<br>
+                            • <b>My back hurts. / I have a terrible cold.</b>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sağ: Yazma (Writing) Şablonları ve Altın Kurallar -->
+                <div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-5 space-y-4">
+                    <h3 class="text-lg font-bold text-emerald-400">✍️ Sınavlık Writing & Edat (Preposition) Şifresi</h3>
+                    
+                    <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs space-y-2">
+                        <b class="text-amber-300 block">📌 Sınavda Çıkabilecek Edat (Preposition) Eşleşmeleri:</b>
+                        <p>• <b>Adjective + Prep (U1, s.7):</b> involved <b>in</b> | good <b>at</b> | responsible <b>for</b> | happy <b>with</b> | interested <b>in</b> | keen <b>on</b></p>
+                        <p>• <b>Verb + Prep (U2, s.14):</b> look <b>for</b> (aramak) | rely <b>on</b> (güvenmek) | help <b>with</b> (yardım etmek) | talk <b>to</b> someone <b>about</b> something | argue <b>with</b> someone <b>about</b> something</p>
+                        <p>• <b>Work + Prep (U5, s.47-50):</b> work <b>for</b> a company (şirket için) | work <b>in</b> IT / marketing / a hospital (sektör/mekan) | work <b>at</b> a library / university</p>
+                    </div>
+
+                    <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs space-y-2">
+                        <b class="text-emerald-300 block">📝 Örnek Writing Modeli (50-60 Kelime Kendini ve Rutinini Tanıtma):</b>
+                        <p class="italic text-slate-300">"Hi! My name is Umut and I am a university student in Yalova. Currently, I am living in a dormitory. I am keen on technology and music. Most of the time, I study English and computer engineering on weekdays. At the weekend, I usually hang out with my friends or go for a coffee. In the future, I hope to work for an international software company."</p>
+                        <p class="text-slate-400">👉 <b>Neden Tam Puan Alır?</b> Çünkü içinde U1 (<i>keen on, most of the time</i>), U2 (<i>Present Simple & Continuous</i>), U3 (<i>hope to work</i>), U4 (<i>hang out, go for a coffee</i>) ve U5 (<i>work for</i>) kalıplarının hepsi var!</p>
+                    </div>
+
+                    <div class="p-3 bg-rose-950/40 border border-rose-500/30 rounded-xl text-xs space-y-1.5">
+                        <b class="text-rose-300 block">🚨 Sınavda Sakın Yapma (Top 5 Hata):</b>
+                        <p>1. <b>Everyone / Somebody</b> gördüğünde çoğul fiil koyma! (<i>Everyone <b>is / has / uses</b></i>)</p>
+                        <p>2. <b>Did / Didn't</b> kullandığın cümlede fiili 2. halde bırakma! (<i>I didn't <b>think</b></i>, <del>didn't thought</del>)</p>
+                        <p>3. <b>Since</b>'ten sonra süreç koyma, başlangıç koy! (<i><b>since</b> 2020 / <b>for</b> 6 years</i>)</p>
+                        <p>4. <b>Mustn't</b> (yasak) ile <b>Don't have to</b> (zorunlu değil) farkını karıştırma!</p>
+                        <p>5. <b>Probably / Definitely</b> kelimelerini <b>will'den sonra</b>, ama <b>won't'tan önce</b> yaz! (<i>will probably go / probably won't go</i>)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // --- VERİ SETİ (SADECE KİTAP ÜNİTE 1-6 İÇERİĞİ) ---
+        let xp = 0;
+        let currentUnitFilter = 'all';
+
+        const grammarData = [
+            {
+                unit: 1,
+                title: "1.1 Question Forms (Soru Kalıpları)",
+                page: "Sayfa 2–3",
+                formula: "(Question Word) + Auxiliary (do/does/did/have) veya Be (am/is/are/was/were) + Subject + Verb?",
+                explanation: "Sorularda yardımcı fiil veya 'be' fiili her zaman özneden ÖNCE gelir.",
+                examples: [
+                    "Where <b>did</b> you study? <i>(Nerede okudun?)</i>",
+                    "<b>Have</b> you ever met a famous person? <i>(Hiç ünlü biriyle tanıştın mı?)</i>",
+                    "What <b>was</b> the last good film you saw? <i>(İzlediğin son iyi film neydi?)</i>"
+                ],
+                mistake: "'Be' fiili (am/is/are/was/were) olan sorularda 'do/did' kullanılmaz! (❌ Did you were at school? ➔ ✅ Were you at school?)",
+                trick: "🧠 Şifre: Soru sorarken Yardımcı Fiil her zaman Öznenin önüne geçip liderlik yapar!"
+            },
+            {
+                unit: 1,
+                title: "1.2 Frequency Words & Phrases (Sıklık İfadeleri)",
+                page: "Sayfa 4–5",
+                formula: "Özne + [always/usually/often/rarely/never] + Ana Fiil  |  Özne + am/is/are + [sıklık zarfı]",
+                explanation: "Tek kelimelik sıklık zarfları ana fiilden ÖNCE, 'am/is/are'dan SONRA gelir. Uzun ifadeler (once a week, every so often, now and again, most of the time) cümle başında veya sonunda durur.",
+                examples: [
+                    "I'm <b>rarely</b> out in the real world. <i>(Gerçek dünyada nadiren dışarıdayımdır.)</i>",
+                    "<b>Once a week</b>, I read my favourite travel blog. <i>(Haftada bir favori seyahat blogumu okurum.)</i>",
+                    "<b>Now and again</b>, I read news blogs. <i>(Arada bir haber blogları okurum.)</i>"
+                ],
+                mistake: "'Hardly ever', 'rarely' ve 'never' zaten olumsuz anlam taşır; yanlarına 'don't/doesn't' eklenmez!",
+                trick: "🧠 Kalıp Üçlüsü: Most of the time (Çoğu zaman) | Every so often (Arada sırada) | Now and again (Arada bir)."
+            },
+            {
+                unit: 1,
+                title: "1.3 Indefinite Pronouns (Belgisiz Zamirler)",
+                page: "Sayfa 6–7",
+                formula: "Everyone / Everybody / Someone / Somebody / Anyone / Nobody / Anything / Nothing + TEKİL FİİL",
+                explanation: "İsmi belli olmayan kişi (-body/-one) veya şeylerden (-thing) bahsederken kullanılır. Sonrasında gelen fiil HER ZAMAN TEKİL olur.",
+                examples: [
+                    "<b>Everybody has</b> their own style of handwriting. <i>(Herkesin kendi el yazısı stili vardır.)</i>",
+                    "<b>Everyone uses</b> a keyboard these days. <i>(Bugünlerde herkes klavye kullanıyor.)</i>",
+                    "I don't agree with <b>anything</b> that they say. <i>(Söyledikleri hiçbir şeye katılmıyorum.)</i>"
+                ],
+                mistake: "Cümlede 'don't/doesn't' varken 'nothing/nobody' kullanmak! Olumsuz yardımcı fiil varsa 'anything/anybody' seçilir.",
+                trick: "🧠 Şifre: EveryONE kelimesinin içinde 'ONE (1)' var! 1 kişi olduğu için fiil tekil (-s) alır!"
+            },
+            {
+                unit: 2,
+                title: "2.1 Adverbs of Degree (Derece Zarfları)",
+                page: "Sayfa 12–13",
+                formula: "[extremely / really / very / so / completely / quite / a bit / almost] + Sıfat (Adjective)",
+                explanation: "Sıfatların önüne gelerek anlamı güçlendirir (extremely, really, very, so, completely) veya zayıflatır/orta derece yapar (quite, a bit, almost).",
+                examples: [
+                    "Buildings like this are <b>extremely</b> expensive. <i>(Bunun gibi binalar aşırı pahalıdır.)</i>",
+                    "Sounds <b>almost</b> impossible! <i>(Kulağa neredeyse imkansız geliyor!)</i>",
+                    "The green spaces are often <b>quite</b> crowded. <i>(Yeşil alanlar genellikle oldukça kalabalık.)</i>"
+                ],
+                mistake: "'Quite' kelimesini 'quiet' (sessiz) ile karıştırmak! 'Quite' = oldukça demektir.",
+                trick: "🧠 Güç sırası: a bit (biraz) < quite (oldukça) < very / really / so (çok) < extremely / completely (aşırı/tamamen)."
+            },
+            {
+                unit: 2,
+                title: "2.2 Present Simple vs. Present Continuous",
+                page: "Sayfa 14–15",
+                formula: "Geniş Zaman: V1 / V-s (Rutin & Durum)  |  Şimdiki Zaman: am/is/are + V-ing (Şu an & Trendler)",
+                explanation: "Her gün yapılan rutinler ve durum fiilleri (like, love, want, know, cost, need, believe, understand) Present Simple alır. Şu an olanlar (at the moment, now) ve değişen trendler (these days) Present Continuous alır.",
+                examples: [
+                    "Apartments <b>cost</b> a lot in Tokyo. <i>(Tokyo'da daireler çok pahalıdır - State Verb!)</i>",
+                    "At the moment, he <b>is living</b> with his parents. <i>(Şu anda ailesiyle yaşıyor.)</i>",
+                    "More of his friends <b>are leaving</b> the city these days. <i>(Bugünlerde daha çok arkadaşı şehirden ayrılıyor.)</i>"
+                ],
+                mistake: "'Cost, like, need, know, want' gibi durum fiillerine -ing takısı eklemek! (❌ is costing / is liking olmaz).",
+                trick: "🧠 Duygu, düşünce ve fiyat bildiren fiiller (State Verbs) üşengeçtir, asla -ing koşusuna çıkmazlar!"
+            },
+            {
+                unit: 2,
+                title: "2.3 Past Simple (Geçmiş Zaman)",
+                page: "Sayfa 16–17",
+                formula: "(+) V-ed / V2   |   (-) didn't + V1 (yalın)   |   (?) Did + Subject + V1 (yalın)?",
+                explanation: "Geçmişte başlayıp bitmiş olayları anlatır. Olumlu cümlede düzenli fiiller -ed alır, düzensizler 2. hale (went, knew, fell, left, taught) geçer.",
+                examples: [
+                    "He <b>left</b> school and <b>went</b> to Cambridge University. <i>(Okuldan mezun oldu ve Cambridge'e gitti.)</i>",
+                    "He met and <b>fell</b> in love with Jane. <i>(Jane ile tanıştı ve aşık oldu.)</i>",
+                    "I <b>didn't think</b> money was important. <i>(Paranın önemli olduğunu düşünmezdim.)</i>"
+                ],
+                mistake: "'Didn't' kullandıktan sonra fiili hala 2. halde yazmak (❌ didn't thought / didn't knew) veya düzensiz fiile -ed takmak (❌ falled, leaved, teached).",
+                trick: "🧠 'Did' bir mıknatıstır! Cümleye girdiği an fiildeki geçmiş zaman ekini (-ed/V2) kendine çeker ve fiili yalın (V1) bırakır."
+            },
+            {
+                unit: 3,
+                title: "3.1 Quantifiers: all / some / most / no / none",
+                page: "Sayfa 22",
+                formula: "all / some / most / no + İsim   |   all / some / most / none + of + the/my/them",
+                explanation: "Genel bir çoğul isimden önce 'all, some, most, no' gelir. Ama araya 'of + the/my/his/them' girerse 'no' yerine kesinlikle 'none of' kullanılır!",
+                examples: [
+                    "<b>None of</b> his journeys were by plane. <i>(Yolculuklarının hiçbiri uçakla değildi.)</i>",
+                    "<b>Most</b> people I know want to visit other countries. <i>(Tanıdığım çoğu insan başka ülkeleri gezmek ister.)</i>",
+                    "<b>No</b> type of transport is completely safe. <i>(Hiçbir ulaşım türü tamamen güvenli değildir.)</i>"
+                ],
+                mistake: "'No of' veya 'None people' demek! İsimden hemen önce 'no', 'of' kelimesinden önce ise 'none' gelir.",
+                trick: "🧠 Şifre: 'NONE' yalnızlığı veya 'OF' kelimesini sever (None of them). 'NO' ise hemen yanına isim ister (No money)."
+            },
+            {
+                unit: 3,
+                title: "3.2 Past Continuous & Past Simple",
+                page: "Sayfa 24–25",
+                formula: "Uzun Eylem: was/were + V-ing   |   Kısa/Bölen Eylem: V2 (Past Simple)",
+                explanation: "Geçmişte devam etmekte olan uzun bir eylem (was/were V-ing) sürerken, araya giren daha kısa bir eylem (Past Simple) olduğunda birlikte kullanılır. 'When' her ikisinden önce gelebilir ama 'While' sadece uzun eylemden (Past Cont.) önce gelir.",
+                examples: [
+                    "He <b>was surfing</b> in South Africa when a shark <b>attacked</b> him. <i>(Bir köpekbalığı saldırdığında sörf yapıyordu.)</i>",
+                    "<b>While</b> they <b>were sailing</b>, things <b>started</b> to go wrong. <i>(Onlar yelken açarken işler ters gitmeye başladı.)</i>",
+                    "Mick <b>was sitting</b> on his board when he <b>noticed</b> the shark. <i>(Köpekbalığını fark ettiğinde tahtasında oturuyordu.)</i>"
+                ],
+                mistake: "Kısa ve ani olan eyleme (noticed, attacked, happened) 'was/were V-ing' koymak!",
+                trick: "🧠 Kamera Kaydı: 'Was/were V-ing' video kaydıdır (uzun sürer), 'V2 (Past Simple)' ise o videoda çekilen anlık fotoğraftır!"
+            },
+            {
+                unit: 3,
+                title: "3.3 Verb + -ing and to + infinitive",
+                page: "Sayfa 26–27",
+                formula: "Fiil 1 + to V1 (hope, decide, refuse...)  |  Fiil 1 + V-ing (enjoy, avoid, mind...)",
+                explanation: "İki fiil yan yana geldiğinde ilk fiil ikincinin şeklini belirler:\n• TO + V1 alanlar: agree, can't afford, choose, decide, expect, hope, learn, manage, need, plan, refuse, seem, want, would like, would prefer.\n• V-ING alanlar: avoid, consider, (don't) mind, enjoy, go on, spend time.\n• İKİSİNİ DE alanlar: love, like, hate, prefer, (can't) stand.",
+                examples: [
+                    "I <b>can't afford to stay</b> in five-star hotels. <i>(5 yıldızlı otellerde kalmaya gücüm yetmez.)</i>",
+                    "Genuine reviewers usually <b>avoid using</b> extreme language. <i>(Gerçek yorumcular aşırı dil kullanmaktan kaçınır.)</i>",
+                    "Would you <b>enjoy visiting</b> a new country? <i>(Yeni bir ülkeyi gezmekten keyif alır mısın?)</i>"
+                ],
+                mistake: "'Enjoy' ve 'mind' fiillerinden sonra 'to' getirmek (❌ enjoy to visit) veya 'would like'tan sonra '-ing' getirmek!",
+                trick: "🧠 Geleceğe yönelik istek/plan fiilleri (hope, plan, decide, expect, refuse, afford) 'TO' ile hedefe gider. Keyif ve süreç fiilleri (enjoy, mind, avoid, spend time, go on) '-ING' alır!"
+            },
+            {
+                unit: 4,
+                title: "4.1 Future: be going to & Present Continuous",
+                page: "Sayfa 32–33",
+                formula: "Niyet (Intention): am/is/are going to + V1  |  Kesin Randevu (Arrangement): am/is/are + V-ing",
+                explanation: "Gelecek için kendi aldığımız kararlar ve niyetlerde (zaman/yer net değilse) 'be going to' kullanılır. Başkalarıyla sözleşilmiş, saati/yeri belli randevularda 'Present Continuous' kullanılır.",
+                examples: [
+                    "I think I'<b>m going to lie down</b> for a while. <i>(Sanırım biraz uzanacağım - Niyet.)</i>",
+                    "We'<b>re meeting</b> the others tonight by the coffee shop. <i>(Bu akşam diğerleriyle kafenin köşesinde buluşuyoruz - Kesin randevu.)</i>",
+                    "Alicia says they <b>are going to open</b> a restaurant one day. <i>(Bir gün restoran açacaklarını söylüyor - Niyet.)</i>"
+                ],
+                mistake: "'Be going to' yapısında 'am/is/are' yardımcı fiilini unutmak (❌ I going to meet).",
+                trick: "🧠 Ajandanda saat ve kişi yazıyorsa 'am/is/are V-ing', sadece aklında bir niyet varsa 'going to'!"
+            },
+            {
+                unit: 4,
+                title: "4.2 Making Predictions: will, might, may",
+                page: "Sayfa 34–35",
+                formula: "Kesin Tahmin: will / won't + V1   |   İhtimal (Belki): might (not) / may (not) + V1",
+                explanation: "Gelecek tahminimizden eminsek 'will/won't', emin değilsek 'might/may' kullanırız. 'Probably' (muhtemelen) ve 'definitely' (kesinlikle) kelimeleri WILL'den SONRA, ama WON'T'tan ÖNCE gelir!",
+                examples: [
+                    "VR headsets <b>will definitely</b> get cheaper. <i>(VR gözlükler kesinlikle ucuzlayacak.)</i>",
+                    "A virtual date <b>probably won't</b> be very romantic. <i>(Sanal bir randevu muhtemelen pek romantik olmayacak.)</i>",
+                    "We <b>might</b> control computers with our minds. <i>(Bilgisayarları zihnimizle kontrol edebiliriz.)</i>"
+                ],
+                mistake: "1) 'might to use' veya 'might going' demek (Hepsinden sonra yalın fiil V1 gelir!). 2) 'not may' demek (Doğrusu: may not / might not).",
+                trick: "🧠 Sıralama Şifresi: Olumluda 'Will + Probably', Olumsuzda 'Probably + Won't' (Won't çok huysuzdur, kimseyi arkasına yaklaştırmaz, önüne alır!)."
+            },
+            {
+                unit: 4,
+                title: "4.3 Subject and Object Questions (Özne ve Nesne Soruları)",
+                page: "Sayfa 36–37",
+                formula: "Subject Question: Who/What + V-s / V2? (Yardımcı fiil YOK!)  |  Object Question: Who/What + do/does/did + Özne + V1?",
+                explanation: "Eylemi YAPAN kişiyi (özneyi) soruyorsak 'do/does/did' KULLANILMAZ, cümle düz cümle gibi kurulur. Eylemden etkilenen nesneyi soruyorsak 'do/does/did' kullanılır.",
+                examples: [
+                    "<b>Who smiles</b> more, you or your best friend? <i>(Kim daha çok gülümser? - Özne Sorusu, 'does' yok!)</i>",
+                    "<b>Who do</b> you <b>spend</b> time with? <i>(Kiminle vakit geçirirsin? - Nesne Sorusu, özne 'you'.)</i>",
+                    "<b>What is</b> hygge? vs. <b>How do you pronounce</b> hygge?"
+                ],
+                mistake: "Özne sorusunda 'Who does smile more?' veya 'What did happen?' demek!",
+                trick: "🧠 Soruda 'Who/What'tan sonra başka bir kişi (you, he, she, they) görüyorsan araya 'do/does/did' koy. Başka kişi yoksa direkt fiili yapıştır!"
+            },
+            {
+                unit: 5,
+                title: "5.1 Ability & Possibility: can, could, be able to",
+                page: "Sayfa 42–43",
+                formula: "Şimdi: can / am-is-are able to  |  Geçmiş: could / was-were able to  |  to/-ing ile: to be able to / being able to",
+                explanation: "'Can' şimdiki, 'could' geçmişteki genel yetenekleri anlatır. Ancak geçmişte özel bir durumdaki tek seferlik başarı için 'was/were able to' kullanılır. Ayrıca 'enjoy V-ing' veya 'would like to' sonrasında can gelemediği için 'be able to' kullanılır.",
+                examples: [
+                    "When I was young, I <b>could</b> stay up late. <i>(Gençken geç saate kadar oturabilirdim - Genel.)</i>",
+                    "I <b>was able to</b> speak to my boss last Friday. <i>(Geçen cuma patronumla konuşabildim - Tek seferlik özel durum.)</i>",
+                    "I really enjoy <b>being able to</b> work for myself. <i>(Kendi işimde çalışabilmekten keyif alıyorum.)</i>"
+                ],
+                mistake: "'I'd like can' veya 'enjoy can' demek! Modallar yan yana veya -ing ile gelemez, 'to be able to / being able to' kullanılır.",
+                trick: "🧠 'Can' sadece yalın halde yaşar. Cümlede 'to', '-ing' veya 'last Friday' gibi tek bir an varsa joker kartımız 'be able to' devreye girer!"
+            },
+            {
+                unit: 5,
+                title: "5.2 Obligation & Permission: must, have to, can",
+                page: "Sayfa 44–45",
+                formula: "Zorunlu: must / have to  |  Yasak: mustn't / can't  |  Gerek Yok (Serbest): don't have to  |  İzinli: can",
+                explanation: "Kurallarda ve zorunluluklarda 'must / have to', yasaklarda 'mustn't / can't', yapılması zorunlu olmayan ama isteyenin yapabileceği durumlarda 'don't have to' kullanılır.",
+                examples: [
+                    "Normally, you <b>must</b> wear smart clothes at the Palace. <i>(Sarayda şık kıyafet giymelisin - Kural.)</i>",
+                    "You <b>don't have to</b> wear a smart suit to be successful! <i>(Başarılı olmak için takım elbise giymek zorunda değilsin!)</i>",
+                    "You <b>mustn't</b> bring your mobile phone inside. <i>(İçeri cep telefonu getirmemelisin - Yasak!)</i>"
+                ],
+                mistake: "'Mustn't' ile 'don't have to'yu aynı sanmak! 'Mustn't' = Yaparsan ceza yersin (Yasak!). 'Don't have to' = Yapmasan da olur, keyfin bilir.",
+                trick: "🧠 Tatil günü okula gitmek: 'You DON'T HAVE TO go' (Zorunda değilsin). Kırmızı ışıkta geçmek: 'You MUSTN'T go' (Yasak!)."
+            },
+            {
+                unit: 5,
+                title: "5.3 Present Perfect with for and since",
+                page: "Sayfa 46–47",
+                formula: "have / has + V3 (Past Participle) + for [süreç] / since [başlangıç noktası]",
+                explanation: "Geçmişte başlayıp hala devam eden eylemler için Present Perfect kullanılır. Geçmişte başlayıp BİTMİŞ eylemler için ise Past Simple (V2) kullanılır.",
+                examples: [
+                    "She <b>has been</b> here <b>for</b> 20 years. <i>(20 yıldır burada - Hala burada.)</i>",
+                    "I <b>haven't worked</b> in journalism <b>since</b> 2004. <i>(2004'ten beri gazetecilikte çalışmadım.)</i>",
+                    "I'<b>ve loved</b> animals <b>since</b> I <b>was</b> little. <i>(Küçüklüğümden beri hayvanları severim - since + Past Simple!)</i>"
+                ],
+                mistake: "'For' ve 'since'i karıştırmak veya 'When did you change jobs?' gibi zamanı belli bitmiş soruya Present Perfect ile cevap vermek.",
+                trick: "🧠 FOR = Toplam Süre (for 3 hours, for six weeks, for a long time). SINCE = Başlangıç Takvimi/Saati (since 9 am, since June, since I was a child)."
+            },
+            {
+                unit: 6,
+                title: "6.1 Quantifiers: too and enough",
+                page: "Sayfa 52–53",
+                formula: "too + sıfat/zarf  |  too many + çoğul isim  |  too much + sayılamayan isim  |  (not) enough + isim  |  fiil/sıfat + enough",
+                explanation: "'Too / too much / too many' = gereğinden fazla (olumsuz aşırılık). 'Enough' = yeterli miktarda. 'Not enough' = yetersiz.",
+                examples: [
+                    "We shouldn't eat <b>too much</b> sugar. <i>(Çok fazla şeker yememeliyiz - Sugar sayılamaz.)</i>",
+                    "<b>Too many</b> eggs are bad for your heart. <i>(Çok fazla yumurta kalbiniz için kötüdür - Eggs sayılabilir.)</i>",
+                    "There are <b>not enough</b> chairs here, and you don't sleep <b>enough</b>. <i>(Yeterince sandalye yok ve yeterince uyumuyorsun.)</i>"
+                ],
+                mistake: "Sayılamayan kelimelere (sugar, coffee, time, money, traffic) 'too many' demek!",
+                trick: "🧠 Sonunda çoğul '-s' eki görebildiğin isimlere (eggs, pies, flavours, chairs) 'TOO MANY', sayamadığın kütlelere (sugar, coffee, water) 'TOO MUCH'!"
+            },
+            {
+                unit: 6,
+                title: "6.2 -ing forms (Gerund, Participle, Adjective)",
+                page: "Sayfa 54–55",
+                formula: "1) Gerund (İsim)   |   2) Present Participle (am/is/are + V-ing)   |   3) Adjective (-ing + İsim)",
+                explanation: "Kitap -ing takısının 3 görevini ayırmanı ister:\n1. Gerund (İsim): Cümlenin öznesiyse veya bir fiil/edattan sonra geliyorsa.\n2. Present Participle: 'be' (am/is/are) fiiliyle şimdiki zaman yapıyorsa.\n3. Adjective (Sıfat): Bir ismin hemen önünde onu niteliyorsa.",
+                examples: [
+                    "<b>Laughing</b> for 15 minutes burns calories. / My brother loves <b>running</b>. <i>(Gerund - İsim)</i>",
+                    "Lucien <b>is becoming</b> very fit these days. / He <b>isn't doing</b> exercise. <i>(Present Participle - Şimdiki Zaman)</i>",
+                    "She left the gym because of the <b>rising</b> prices. / A <b>running</b> master. <i>(Adjective - Sıfat)</i>"
+                ],
+                mistake: "Unit 6 Review'daki gibi cümlede -ing kelimesinin türünü (Gerund / Adjective / Present Participle) seçerken 'am/is/are' olup olmadığına bakmamak.",
+                trick: "🧠 Önünde 'am/is/are' varsa ➔ Present Participle. Hemen arkasında nitelediği bir isim varsa (rising prices) ➔ Adjective. Geri kalanlar (özne veya love/try sonrası) ➔ Gerund!"
+            },
+            {
+                unit: 6,
+                title: "6.3 Present Perfect with just, already and yet",
+                page: "Sayfa 56–57",
+                formula: "have/has + JUST / ALREADY + V3 (Olumlu)   |   haven't/hasn't + V3 ... + YET (Olumsuz & Soru)",
+                explanation: "• JUST: Az önce / henüz yeni oldu (Olumlu cümlede have/has ile V3 arasında).\n• ALREADY: Çoktan / beklenenden önce oldu (Olumlu cümlede have/has ile V3 arasında).\n• YET: Henüz olmadı / oldu mu? (Olumsuz ve sorularda CÜMLENİN EN SONUNDA).",
+                examples: [
+                    "I've <b>just</b> changed to a vegetarian diet. <i>(Vejetaryen diyete henüz yeni geçtim.)</i>",
+                    "I've <b>already</b> eaten two sausages today! <i>(Bugün çoktan iki sosis yedim bile!)</i>",
+                    "I haven't managed to go vegan <b>yet</b>. / Have you tried kale chips <b>yet</b>? <i>(Henüz başaramadım. / Henüz denedin mi?)</i>"
+                ],
+                mistake: "'Yet' kelimesini olumlu cümlede veya cümle ortasında kullanmak!",
+                trick: "🧠 Şifre: 'YET' en sona atılır (Olumsuz & Soru). 'JUST' (az önce) ve 'ALREADY' (çoktan) ise have/has ile V3'ün arasına sandviç olur!"
+            }
+        ];
+
+        const vocabData = [
+            // Unit 1
+            { unit: 1, term: "keen on", tr: "meraklı, düşkün, hevesli", ex: "Maria is keen on reading. (s. 4, 7)" },
+            { unit: 1, term: "involved in", tr: "bir şeye dahil olan, içinde yer alan", ex: "Are you involved in any clubs or teams? (s. 7)" },
+            { unit: 1, term: "responsible for", tr: "-den sorumlu", ex: "Who is responsible for doing the cooking? (s. 7)" },
+            { unit: 1, term: "sensible", tr: "mantıklı, aklı başında (⚠️ hassas DEĞİL!)", ex: "You're sensible: you think carefully about decisions. (s. 6)" },
+            { unit: 1, term: "curious", tr: "meraklı", ex: "You are curious. Your favourite question is 'Why?'. (s. 6)" },
+            { unit: 1, term: "well-organised", tr: "düzenli, planlı", ex: "I plan my time carefully; I am well-organised. (s. 7)" },
+            { unit: 1, term: "foodie / people person", tr: "gurme (yemek tutkunu) / sosyal insan", ex: "Emma is a people person and she's also a foodie. (s. 5)" },
+            // Unit 2
+            { unit: 2, term: "convenient ↔ inconvenient", tr: "uygun, elverişli, ulaşımı kolay ↔ elverişsiz", ex: "Bosco Verticale is really convenient for transport. (s. 12-13)" },
+            { unit: 2, term: "peaceful ↔ noisy", tr: "huzurlu, sakin ↔ gürültülü", ex: "My neighbourhood is very peaceful. (s. 13)" },
+            { unit: 2, term: "rely on", tr: "güvenmek, bel bağlamak", ex: "He can always rely on us. (s. 14)" },
+            { unit: 2, term: "argue with / argue about", tr: "biriyle tartışmak / bir konu hakkında tartışmak", ex: "I often argue with my parents about housework. (s. 14)" },
+            { unit: 2, term: "look for / help with", tr: "aramak / bir şeye yardım etmek", ex: "I'm looking for a job and I help with the housework. (s. 14)" },
+            { unit: 2, term: "fall in love / get married", tr: "aşık olmak / evlenmek (Past: fell / got)", ex: "He fell in love and got married in 1950. (s. 20)" },
+            // Unit 3
+            { unit: 3, term: "by boat / get a bus / take a taxi", tr: "tekneyle (by + a/an YOK) / otobüse binmek / taksi tutmak", ex: "He went by train, got a bus or took a taxi. (s. 23)" },
+            { unit: 3, term: "give someone a lift", tr: "birini arabayla/motorla bırakmak", ex: "My brother gives me a lift on his motorbike. (s. 23)" },
+            { unit: 3, term: "dishonest / impatient / incorrect", tr: "dürüst olmayan (dis-) / sabırsız (im-) / yanlış (in-)", ex: "He doesn't like waiting — he's very impatient. (s. 25)" },
+            { unit: 3, term: "chalet / campsite / cruise ship", tr: "dağ evi / kamp alanı / kruvaziyer gemisi", ex: "A chalet is a wooden house built in a mountain area. (s. 30)" },
+            { unit: 3, term: "genuine ↔ fake", tr: "gerçek, samimi ↔ sahte", ex: "Some hotels pay people to write fake reviews. (s. 26)" },
+            // Unit 4
+            { unit: 4, term: "go to / go for / hang out", tr: "bir yere gitmek (the cinema/a party) / bir şey için gitmek (a walk/sushi/a drink) / takılmak", ex: "Let's go for sushi and hang out in the park. (s. 32, 40)" },
+            { unit: 4, term: "possibility / prediction / agreement", tr: "olasılık (-ity) / tahmin (-ion) / anlaşma (-ment)", ex: "There is a possibility that robots will feel love. (s. 35)" },
+            { unit: 4, term: "happiness / sadness", tr: "mutluluk (-ness) / üzüntü (-ness)", ex: "Robots won't experience real happiness or sadness. (s. 35)" },
+            { unit: 4, term: "cosy / easy-going", tr: "sıcak ve rahat (ortam) / uyumlu, rahat (kişi)", ex: "Enjoying coffee in a cosy atmosphere with easy-going friends. (s. 36)" },
+            // Unit 5
+            { unit: 5, term: "work shifts / take a day off", tr: "vardiyalı çalışmak / izin günü almak", ex: "I do shifts. I was able to take an afternoon off. (s. 42-43)" },
+            { unit: 5, term: "get a pay rise / get a bonus", tr: "maaş zammı almak / prim almak", ex: "If I make a lot of sales, I get a bonus. (s. 42-43)" },
+            { unit: 5, term: "self-employed", tr: "kendi işinde çalışan, serbest meslek", ex: "Because I'm self-employed, I'm my own boss. (s. 42)" },
+            { unit: 5, term: "casual / smart / stylish", tr: "günlük-rahat kıyafet / şık-resmi / tarz", ex: "You must wear smart clothes, not casual flip-flops. (s. 44-45)" },
+            { unit: 5, term: "work for / work in / work at", tr: "bir şirket için çalışmak / bir sektörde-yerde çalışmak", ex: "She works in IT for a software company. (s. 47, 50)" },
+            // Unit 6
+            { unit: 6, term: "a sore throat / a cough / flu", tr: "boğaz ağrısı / öksürük / grip", ex: "I've got a cough and a sore throat. (s. 53, 60)" },
+            { unit: 6, term: "a temperature / stomach ache", tr: "ateş (yüksek ateş) / mide ağrısı", ex: "I've got a temperature, I feel hot all the time. (s. 53, 60)" },
+            { unit: 6, term: "lose weight / keep fit / work out", tr: "kilo vermek / formda kalmak / antrenman yapmak", ex: "Do you work out at a gym to keep fit and lose weight? (s. 60)" },
+            { unit: 6, term: "go jogging / play a team sport / do yoga", tr: "koşuya gitmek (go) / takım sporu oynamak (play) / yoga yapmak (do)", ex: "Do you go jogging or do yoga? (s. 60)" },
+            { unit: 6, term: "wheat / grain / lettuce / cod", tr: "buğday / tahıl / marul / morina balığı", ex: "Pasta is made from wheat. Salad has lettuce. (s. 56, 60)" }
+        ];
+
+        const quizQuestions = [
+            {
+                unit: 1,
+                q: "Everyone in our university class ______ a smartphone these days.",
+                options: ["use", "uses", "using", "are using"],
+                ans: 1,
+                exp: "Unit 1.3 (s. 7, 10): 'Everyone / Everybody / Someone' gibi belgisiz zamirler her zaman TEKİL fiil alır (Everyone uses)."
+            },
+            {
+                unit: 1,
+                q: "In my family, we are all responsible ______ doing the housework.",
+                options: ["on", "with", "for", "in"],
+                ans: 2,
+                exp: "Unit 1.3 (s. 7, 10): Sorumlu olmak kalıbı 'responsible FOR' ile kurulur. (keen ON, involved IN, good AT, happy WITH)."
+            },
+            {
+                unit: 1,
+                q: "______ so often, I read a cooking blog on Sunday mornings.",
+                options: ["Most", "Now", "Every", "Once"],
+                ans: 2,
+                exp: "Unit 1.2 (s. 5, 10): Kalıbımız 'Every so often' (Arada sırada). Diğerleri: 'Most of the time' ve 'Now and again'."
+            },
+            {
+                unit: 2,
+                q: "Apartments ______ a lot in Tokyo, so Daisuki ______ with his parents at the moment.",
+                options: ["are costing / lives", "cost / is living", "costs / living", "cost / lives"],
+                ans: 1,
+                exp: "Unit 2.2 (s. 15, 20): 'Cost' bir durum fiilidir (state verb) ve asla -ing almaz (cost). 'At the moment' ise şimdiki zaman (is living) ister."
+            },
+            {
+                unit: 2,
+                q: "When I was a child, I didn't ______ money was important.",
+                options: ["thought", "thinking", "think", "to think"],
+                ans: 2,
+                exp: "Unit 2.3 (s. 17, 20): 'Didn't' yardımcı fiilinden sonra fiil her zaman YALIN (V1 - think) gelir."
+            },
+            {
+                unit: 2,
+                q: "Many callers can't talk ______ their problems with people they live ______.",
+                options: ["to / on", "about / with", "for / about", "with / for"],
+                ans: 1,
+                exp: "Unit 2.2 (s. 14, 20): Bir konu hakkında konuşmak 'talk ABOUT problems', biriyle yaşamak 'live WITH'."
+            },
+            {
+                unit: 3,
+                q: "______ of his journeys were by plane; he travelled overland and by sea.",
+                options: ["No", "None", "Some", "Most"],
+                ans: 1,
+                exp: "Unit 3.1 (s. 22): Arkasında 'of + his/the/them' varsa ve anlam olumsuzsa 'None of' kullanılır. 'No of' diye bir yapı yoktur!"
+            },
+            {
+                unit: 3,
+                q: "In 2015, Mick Fanning ______ in a competition when a shark ______ him.",
+                options: ["surfed / was attacking", "was surfing / attacked", "was surfing / was attacking", "surfed / attacked"],
+                ans: 1,
+                exp: "Unit 3.2 (s. 24, 30): Devam eden uzun arka plan eylemi Past Continuous (was surfing), onu bölen ani olay Past Simple (attacked)."
+            },
+            {
+                unit: 3,
+                q: "I love travelling, but I can't afford ______ in five-star hotels, and I avoid ______ fake reviews.",
+                options: ["staying / to read", "to stay / reading", "to stay / to read", "stay / reading"],
+                ans: 1,
+                exp: "Unit 3.3 (s. 26-27): 'can't afford' her zaman 'to + V1' (to stay) alır; 'avoid' ise her zaman 'V-ing' (reading) alır."
+            },
+            {
+                unit: 4,
+                q: "Go to bed early because we ______ at 6 am tomorrow to drive to the airport.",
+                options: ["will probably get up", "are getting up", "might get up", "gets up"],
+                ans: 1,
+                exp: "Unit 4.1 (s. 33, 40): Saat 6'da havaalanına gitmek gibi kesinleşmiş, saati belli planlarda Present Continuous (are getting up) veya be going to kullanılır."
+            },
+            {
+                unit: 4,
+                q: "A virtual date online ______ be very romantic in the future.",
+                options: ["won't probably", "probably won't", "might not to", "not may"],
+                ans: 1,
+                exp: "Unit 4.2 (s. 34, 40): 'Probably' ve 'definitely' kelimeleri 'will'den sonra, ama 'won't'tan ÖNCE gelir (probably won't)."
+            },
+            {
+                unit: 4,
+                q: "A: 'Who ______ more, you or your best friend?'  B: 'Who ______ you spend time with?'",
+                options: ["does smile / do", "smiles / do", "smiles / does", "smile / are"],
+                ans: 1,
+                exp: "Unit 4.3 (s. 37, 40): İlk soru Özne Sorusudur (do/does almaz: Who smiles more?). İkinci soru Nesne Sorusudur (Who do you spend time with?)."
+            },
+            {
+                unit: 5,
+                q: "I really enjoy ______ work for myself, and last Friday I ______ speak to my boss about a pay rise.",
+                options: ["can / could", "being able to / was able to", "to be able to / could", "being able to / can"],
+                ans: 1,
+                exp: "Unit 5.1 (s. 43, 50): 'Enjoy' fiilinden sonra -ing geldiği için 'being able to' kullanılır. Geçmişteki tek seferlik özel bir durum (last Friday) için de 'was able to' seçilir."
+            },
+            {
+                unit: 5,
+                q: "If the Royal family are away, palace staff ______ wear the full uniform, so they can relax.",
+                options: ["mustn't", "don't have to", "can't", "have to"],
+                ans: 1,
+                exp: "Unit 5.2 (s. 45, 50): Zorunluluğun olmadığı (gerek yok) durumlarda 'don't have to' kullanılır. 'Mustn't' yasak demektir."
+            },
+            {
+                unit: 5,
+                q: "I ______ work here last December, and I ______ animals since I was little.",
+                options: ["have started / loved", "started / have loved", "started / loved", "have started / have loved"],
+                ans: 1,
+                exp: "Unit 5.3 (s. 47, 50): 'Last December' bitmiş geçmiş zamandır (started). 'Since I was little' ise geçmişten bugüne devam eder (have loved)."
+            },
+            {
+                unit: 6,
+                q: "We can't make a cake because there are ______ eggs in the fridge, and we shouldn't eat ______ sugar.",
+                options: ["too much / too many", "not enough / too much", "enough / too many", "too many / not enough"],
+                ans: 1,
+                exp: "Unit 6.1 (s. 52, 60): Kek yapamıyorsak yeterince yumurta yoktur (not enough eggs). Şeker (sugar) sayılamadığı için 'too much sugar' alır."
+            },
+            {
+                unit: 6,
+                q: "'She left the gym because of the RISING prices.' Bu cümlede 'rising' kelimesinin görevi nedir?",
+                options: ["Gerund (İsim)", "Present Participle (Şimdiki Zaman Fiili)", "Adjective (Sıfat)", "Infinitive"],
+                ans: 2,
+                exp: "Unit 6.2 (s. 55, 60): 'Rising prices' (artan fiyatlar) ifadesinde 'rising', 'prices' ismini niteleyen bir SIFATTIR (Adjective)."
+            },
+            {
+                unit: 6,
+                q: "This morning I decided to go vegan. I've ______ bought a vegan cookbook, but I haven't cooked anything ______.",
+                options: ["yet / already", "already / yet", "just / already", "yet / just"],
+                ans: 1,
+                exp: "Unit 6.3 (s. 57, 60): Olumlu cümlede have ile V3 arasına 'already' (veya just), olumsuz cümlenin en sonuna ise kesinlikle 'yet' gelir."
+            }
+        ];
+
+        // --- FONKSİYONLAR ---
+        function addXP(amount) {
+            xp += amount;
+            document.getElementById('xp-count').innerText = xp;
+            const titleEl = document.getElementById('level-title');
+            if (xp >= 150) {
+                titleEl.innerText = "👑 Exam Warrior (Sınav Savaşçısı)";
+                titleEl.className = "text-sm font-bold text-rose-400";
+            } else if (xp >= 70) {
+                titleEl.innerText = "🏹 Grammar Hunter (Gramer Avcısı)";
+                titleEl.className = "text-sm font-bold text-emerald-400";
+            }
+        }
+
+        function switchTab(tabName) {
+            ['grammar', 'vocab', 'quiz', 'cheatsheet'].forEach(t => {
+                document.getElementById('sec-' + t).classList.add('hidden');
+                document.getElementById('tab-' + t).classList.remove('tab-active');
+                document.getElementById('tab-' + t).classList.add('text-slate-300');
+            });
+            document.getElementById('sec-' + tabName).classList.remove('hidden');
+            document.getElementById('tab-' + tabName).classList.add('tab-active');
+            document.getElementById('tab-' + tabName).classList.remove('text-slate-300');
+
+            const filterBar = document.getElementById('unit-filter-bar');
+            filterBar.style.display = (tabName === 'cheatsheet') ? 'none' : 'flex';
+        }
+
+        function filterUnit(unit) {
+            currentUnitFilter = unit;
+            document.querySelectorAll('.unit-btn').forEach(btn => {
+                if (btn.getAttribute('data-unit') == unit) {
+                    btn.className = "unit-btn bg-indigo-600 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg transition";
+                } else {
+                    btn.className = "unit-btn bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold px-3 py-1.5 rounded-lg transition";
+                }
+            });
+            renderGrammar();
+            renderVocab();
+            restartQuiz();
+        }
+
+        function renderGrammar() {
+            const container = document.getElementById('grammar-grid');
+            const filtered = currentUnitFilter === 'all' ? grammarData : grammarData.filter(d => d.unit === currentUnitFilter);
+            container.innerHTML = filtered.map((item, idx) => `
+                <div class="bg-slate-800/70 border border-slate-700/80 rounded-2xl p-5 flex flex-col justify-between hover:border-indigo-500/50 transition">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-md bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Unit ${item.unit} • ${item.page}</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white">${item.title}</h3>
+                        <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 text-xs font-mono text-amber-300">
+                            📐 ${item.formula}
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed whitespace-pre-line">${item.explanation}</p>
+                        <div class="space-y-1.5 pt-1">
+                            <div class="text-xs font-semibold text-slate-400">📖 Kitaptan Örnekler:</div>
+                            ${item.examples.map(ex => `<div class="text-xs bg-slate-900/50 px-3 py-1.5 rounded-lg text-slate-200">• ${ex}</div>`).join('')}
+                        </div>
+                        <div class="bg-rose-950/40 border border-rose-500/30 rounded-xl p-3 text-xs text-rose-200">
+                            <b>⚠️ Türk Öğrencilerin Sık Yaptığı Hata:</b><br>${item.mistake}
+                        </div>
+                        <div class="bg-emerald-950/30 border border-emerald-500/20 rounded-xl p-2.5 text-xs text-emerald-300">
+                            ${item.trick}
+                        </div>
+                    </div>
+                    <button onclick="markLearned(this)" class="mt-4 w-full py-2 rounded-xl bg-slate-700 hover:bg-emerald-600 text-xs font-bold text-slate-200 hover:text-white transition">
+                        ✅ Konuyu Anladım (+10 XP)
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function markLearned(btn) {
+            if (btn.disabled) return;
+            btn.disabled = true;
+            btn.innerText = "🎉 Tamamlandı (+10 XP Kazanıldı)";
+            btn.className = "mt-4 w-full py-2 rounded-xl bg-emerald-600/30 border border-emerald-500/40 text-xs font-bold text-emerald-300 cursor-default";
+            addXP(10);
+        }
+
+        function renderVocab() {
+            const container = document.getElementById('vocab-grid');
+            const filtered = currentUnitFilter === 'all' ? vocabData : vocabData.filter(d => d.unit === currentUnitFilter);
+            container.innerHTML = filtered.map((v, i) => `
+                <div class="perspective h-44 cursor-pointer" onclick="this.querySelector('.card-inner').classList.toggle('flipped'); addXPOnce(this);">
+                    <div class="card-inner transform-style-3d relative w-full h-full">
+                        <!-- Ön Yüz -->
+                        <div class="backface-hidden absolute inset-0 bg-slate-800 border border-slate-700 hover:border-indigo-500 rounded-2xl p-5 flex flex-col justify-between">
+                            <div class="flex justify-between items-center">
+                                <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-slate-700 text-slate-300">Unit ${v.unit}</span>
+                                <span class="text-[11px] text-slate-400">Çevirmek için tıkla 🔄</span>
+                            </div>
+                            <div class="text-center my-auto">
+                                <h4 class="text-lg font-extrabold text-white">${v.term}</h4>
+                            </div>
+                            <div class="text-[11px] text-center text-indigo-400 font-medium">Anlamı ve örneği gör</div>
+                        </div>
+                        <!-- Arka Yüz -->
+                        <div class="backface-hidden rotate-y-180 absolute inset-0 bg-indigo-950 border border-indigo-500 rounded-2xl p-5 flex flex-col justify-between">
+                            <span class="text-[11px] font-bold text-indigo-300">🇹🇷 Türkçe Anlamı:</span>
+                            <div class="my-auto">
+                                <p class="text-sm font-bold text-amber-300 mb-2">${v.tr}</p>
+                                <p class="text-xs text-slate-200 italic">"${v.ex}"</p>
+                            </div>
+                            <span class="text-[10px] text-emerald-400 font-semibold">+5 XP</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addXPOnce(el) {
+            if (!el.dataset.counted) {
+                el.dataset.counted = "true";
+                addXP(5);
+            }
+        }
+
+        // --- QUIZ SİSTEMİ ---
+        let activeQuestions = [];
+        let currentQIndex = 0;
+        let correctCount = 0;
+        let wrongCount = 0;
+        let wrongList = [];
+
+        function restartQuiz() {
+            activeQuestions = currentUnitFilter === 'all' ? [...quizQuestions] : quizQuestions.filter(q => q.unit === currentUnitFilter);
+            currentQIndex = 0;
+            correctCount = 0;
+            wrongCount = 0;
+            wrongList = [];
+            document.getElementById('quiz-badge').innerText = currentUnitFilter === 'all' ? "Karışık Sınav Modu (U1-U6)" : `Unit ${currentUnitFilter} Mini Test`;
+            document.getElementById('quiz-container').classList.remove('hidden');
+            document.getElementById('quiz-result').classList.add('hidden');
+            updateQuizUI();
+        }
+
+        function updateQuizUI() {
+            const q = activeQuestions[currentQIndex];
+            document.getElementById('q-current').innerText = currentQIndex + 1;
+            document.getElementById('q-total').innerText = activeQuestions.length;
+            document.getElementById('score-correct').innerText = correctCount;
+            document.getElementById('score-wrong').innerText = wrongCount;
+            document.getElementById('q-text').innerHTML = `<span class="text-xs font-bold text-indigo-400 block mb-1">[Unit ${q.unit}]</span> ${q.q}`;
+            
+            const optsContainer = document.getElementById('q-options');
+            optsContainer.innerHTML = q.options.map((opt, i) => `
+                <button onclick="selectAnswer(${i})" class="opt-btn text-left p-3.5 rounded-xl bg-slate-900 hover:bg-slate-700 border border-slate-700 font-medium text-sm transition">
+                    <span class="inline-block w-6 font-bold text-indigo-400">${String.fromCharCode(65 + i)})</span> ${opt}
+                </button>
+            `).join('');
+
+            document.getElementById('q-feedback').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+        }
+
+        function selectAnswer(idx) {
+            const q = activeQuestions[currentQIndex];
+            const buttons = document.querySelectorAll('.opt-btn');
+            buttons.forEach(b => b.disabled = true);
+
+            const feedback = document.getElementById('q-feedback');
+            feedback.classList.remove('hidden');
+
+            if (idx === q.ans) {
+                correctCount++;
+                addXP(15);
+                buttons[idx].className = "opt-btn text-left p-3.5 rounded-xl bg-emerald-600/30 border-2 border-emerald-500 font-bold text-sm text-emerald-200";
+                feedback.className = "rounded-xl p-4 mb-4 text-sm bg-emerald-950/60 border border-emerald-500/40 text-emerald-200";
+                feedback.innerHTML = `<b>🎯 Harika! Doğru Cevap (+15 XP)</b><br>${q.exp}`;
+            } else {
+                wrongCount++;
+                wrongList.push(q);
+                buttons[idx].className = "opt-btn text-left p-3.5 rounded-xl bg-rose-600/30 border-2 border-rose-500 font-bold text-sm text-rose-200";
+                buttons[q.ans].className = "opt-btn text-left p-3.5 rounded-xl bg-emerald-600/30 border-2 border-emerald-500 font-bold text-sm text-emerald-200";
+                feedback.className = "rounded-xl p-4 mb-4 text-sm bg-rose-950/60 border border-rose-500/40 text-rose-200";
+                feedback.innerHTML = `<b>💡 Dikkat! Doğru cevap: ${q.options[q.ans]}</b><br>${q.exp}`;
+            }
+
+            document.getElementById('score-correct').innerText = correctCount;
+            document.getElementById('score-wrong').innerText = wrongCount;
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQIndex++;
+            if (currentQIndex < activeQuestions.length) {
+                updateQuizUI();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz-container').classList.add('hidden');
+            const res = document.getElementById('quiz-result');
+            res.classList.remove('hidden');
+            const pct = Math.round((correctCount / activeQuestions.length) * 100);
+            document.getElementById('result-summary').innerText = `Toplam ${activeQuestions.length} soruda ${correctCount} doğru yaptın! Başarı Oranın: %${pct}`;
+            
+            const weakDiv = document.getElementById('weak-points');
+            if (wrongList.length === 0) {
+                weakDiv.innerHTML = `<div class="text-emerald-400 font-bold text-center">Kusursuz! Hiç yanlışın yok, sınava tamamen hazırsın! 🚀</div>`;
+            } else {
+                weakDiv.innerHTML = `<div class="font-bold text-rose-400 mb-2">📌 Tekrar Etmen Gereken Noktalar:</div>` +
+                    wrongList.map(w => `<div class="border-b border-slate-800 pb-2">• <b>[Unit ${w.unit}]</b> ${w.exp}</div>`).join('');
+            }
+        }
+
+        // Başlangıç Yüklemesi
+        renderGrammar();
+        renderVocab();
+        restartQuiz();
+    </script>
+</body>
+</html>
